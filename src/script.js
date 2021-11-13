@@ -20,10 +20,10 @@ import {
   getClockTime,
   createGeometry,
   addMaterial,
+  setRotation,
 } from "./functions"
 import { vertex } from "./shaders/vertex"
 import { fragment } from "./shaders/fragment"
-import { fragmentInner } from "./shaders/fragmentInner"
 
 //_ Select the canvas
 const canvas = document.querySelector("canvas.webgl")
@@ -53,7 +53,8 @@ const renderer = pipe(
   setPixelRatioToDevice
 )(canvas)
 
-const wireframeMaterial = createMaterial("shader", {
+//* create geometry
+const material = createMaterial("shader", {
   vertexShader: vertex,
   fragmentShader: fragment,
   uniforms: {
@@ -62,52 +63,18 @@ const wireframeMaterial = createMaterial("shader", {
   },
 })
 
-const material = createMaterial("shader", {
-  vertexShader: vertex,
-  fragmentShader: fragmentInner,
-  uniforms: {
-    uSize: { value: 1.0 * renderer.getPixelRatio() },
-    uTime: { value: 0 },
-  },
-})
-
-const addWireframeMaterial = curry(addMaterial)(wireframeMaterial)
 const addShaderMaterial = curry(addMaterial)(material)
+const rotateCircle = curry(setRotation)({ x: Math.PI, y: 0, z: 1.1 * Math.PI })
 
-const createWireframe = (props) => {
-  const wireframe = createGeometry({
-    geometry: "icosahedronBuffer",
-    props: props,
-  })
-
-  let length = wireframe.attributes.position.array.length
-
-  let bary = []
-
-  for (let i = 0; i < length; i++) {
-    bary.push(0, 0, 1, 0, 1, 0, 1, 0, 0)
-  }
-
-  const aBary = new Float32Array(bary)
-  wireframe.setAttribute("aBary", new THREE.BufferAttribute(aBary, 3))
-
-  return wireframe
-}
-
-const outer = pipe(
-  createWireframe,
-  addWireframeMaterial,
-  addObjToScene
-)([5.005, 1])
-
-const inner = pipe(
+const geometry = pipe(
   createGeometry,
   addShaderMaterial,
-  addObjToScene
-)({ geometry: "icosahedronBuffer", props: [5, 1] })
+  addObjToScene,
+  rotateCircle
+)({ geometry: "circle", props: [5, 128] })
 
 //* create camera
-const setPositionOffCenter = curry(setPosition)({ x: 0, y: 0, z: -13 })
+const setPositionOffCenter = curry(setPosition)({ x: 0, y: 0, z: -7 })
 
 const camera = pipe(
   createCamera,
@@ -145,12 +112,6 @@ const frame = () => {
 
   const elapsedTime = getClockTime(clock)
   mutateUniform(material, "uTime", elapsedTime)
-
-  inner.rotation.x += 0.005
-  inner.rotation.y += 0.005
-
-  outer.rotation.x += 0.005
-  outer.rotation.y += 0.005
 
   window.requestAnimationFrame(frame)
 }

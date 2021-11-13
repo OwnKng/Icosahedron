@@ -86,9 +86,6 @@ float cnoise(vec3 P)
 
 export const vertex = /* glsl */ `
     uniform float uTime;
-    varying vec3 vNormal;
-    attribute vec3 aBary;
-    varying vec3 vBary;
     varying vec2 vUv; 
     varying float vTime; 
 
@@ -97,10 +94,7 @@ export const vertex = /* glsl */ `
 
     void main() {
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-
-        vNormal = normalize(normalMatrix * normal);
-        vBary = aBary;
-        vUv = uv;
         vTime = uTime; 
+        vUv = uv;
     }
 `

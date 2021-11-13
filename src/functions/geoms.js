@@ -7,6 +7,8 @@ const createIcosahedron = (props) => new THREE.IcosahedronGeometry(...props)
 const createIcosahedronBuffer = (props) =>
   new THREE.IcosahedronBufferGeometry(...props)
 
+const createCircleGeometry = (props) => new THREE.CircleGeometry(...props)
+
 const createBuffer = (props) => new THREE.BufferGeometry(props)
 
 const geomMap = {
@@ -15,6 +17,7 @@ const geomMap = {
   buffer: createBuffer,
   icosahedron: createIcosahedron,
   icosahedronBuffer: createIcosahedronBuffer,
+  circle: createCircleGeometry,
 }
 
 const createGeometry = ({ geometry, props = {} }) => {

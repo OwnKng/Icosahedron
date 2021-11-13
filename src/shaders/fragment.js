@@ -45,21 +45,23 @@ const hsl2rgb = `
 `
 
 export const fragment = /* glsl */ `
-    varying vec3 vNormal;
-    varying vec3 vBary;
     varying vec2 vUv; 
     varying float vTime; 
+    #define PI 3.1415926538
 
     ${hsl2rgb}
-    
 
     void main() {
-        float width = 1.0;
-        vec3 d = fwidth(vBary);
-        vec3 s = smoothstep(d*(width + 0.5), d*(width - 0.5), vBary);
-        float line = max(s.x, max(s.y, s.z));
 
-        if(line < 0.2) discard;
-        gl_FragColor = vec4(vec3(line), 1.0);
+        float angle = atan(vUv.x - 0.5, vUv.y - 0.5);
+        angle /= PI * 2.0;
+        float strength = floor(angle * 20.0) / 20.0;
+
+        float lightness = distance(vUv, vec2(0.5)) + 0.5 * 0.75;
+        lightness = floor(lightness * 10.0) / 10.0;
+
+        vec3 color = hsl2rgb(strength, 0.9, lightness);
+
+        gl_FragColor = vec4(color, 1.0);
     }
 `
