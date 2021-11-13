@@ -55,12 +55,14 @@ export const fragment = /* glsl */ `
 
         float angle = atan(vUv.x - 0.5, vUv.y - 0.5);
         angle /= PI * 2.0;
-        float strength = floor(angle * 20.0) / 20.0;
+
+        float time = sin(vTime * 0.6) * 0.5 + 0.5;
+        float strength = floor(time * angle * 20.0) / 20.0;
 
         float lightness = distance(vUv, vec2(0.5)) + 0.5 * 0.75;
         lightness = floor(lightness * 10.0) / 10.0;
 
-        vec3 color = hsl2rgb(strength, 0.9, lightness);
+        vec3 color = hsl2rgb(strength, time, lightness);
 
         gl_FragColor = vec4(color, 1.0);
     }

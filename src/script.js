@@ -64,7 +64,7 @@ const material = createMaterial("shader", {
 })
 
 const addShaderMaterial = curry(addMaterial)(material)
-const rotateCircle = curry(setRotation)({ x: Math.PI, y: 0, z: 1.1 * Math.PI })
+const rotateCircle = curry(setRotation)({ x: Math.PI, y: 0, z: 0 })
 
 const geometry = pipe(
   createGeometry,
