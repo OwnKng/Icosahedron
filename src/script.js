@@ -64,17 +64,15 @@ const material = createMaterial("shader", {
 })
 
 const addShaderMaterial = curry(addMaterial)(material)
-const rotateCircle = curry(setRotation)({ x: Math.PI, y: 0, z: 0 })
 
 const geometry = pipe(
   createGeometry,
   addShaderMaterial,
-  addObjToScene,
-  rotateCircle
-)({ geometry: "circle", props: [5, 128] })
+  addObjToScene
+)({ geometry: "plane", props: [10, 10, 10, 10] })
 
 //* create camera
-const setPositionOffCenter = curry(setPosition)({ x: 0, y: 0, z: -7 })
+const setPositionOffCenter = curry(setPosition)({ x: 0, y: 0, z: 2 })
 
 const camera = pipe(
   createCamera,

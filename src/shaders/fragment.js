@@ -52,17 +52,10 @@ export const fragment = /* glsl */ `
     ${hsl2rgb}
 
     void main() {
+        float strength = ceil(vUv.x * 10.0) / 10.0 * ceil(vUv.y * 10.0) / 10.0;
+        float hue  = 0.5 + strength * 0.5;
 
-        float angle = atan(vUv.x - 0.5, vUv.y - 0.5);
-        angle /= PI * 2.0;
-
-        float time = sin(vTime * 0.6) * 0.5 + 0.5;
-        float strength = floor(time * angle * 20.0) / 20.0;
-
-        float lightness = distance(vUv, vec2(0.5)) + 0.5 * 0.75;
-        lightness = floor(lightness * 10.0) / 10.0;
-
-        vec3 color = hsl2rgb(strength, time, lightness);
+        vec3 color = hsl2rgb(hue, 0.4, 0.5);
 
         gl_FragColor = vec4(color, 1.0);
     }
