@@ -44,18 +44,32 @@ const hsl2rgb = `
     }
 `
 
+const hsb2rgb = `
+//  Function from Iñigo Quiles
+//  https://www.shadertoy.com/view/MsS3Wc
+vec3 hsb2rgb( in vec3 c ){
+    vec3 rgb = clamp(abs(mod(c.x*6.0+vec3(0.0,4.0,2.0),
+                             6.0)-3.0)-1.0,
+                     0.0,
+                     1.0 );
+    rgb = rgb*rgb*(3.0-2.0*rgb);
+    return c.z * mix( vec3(1.0), rgb, c.y);
+}
+`
+
 export const fragment = /* glsl */ `
     varying vec2 vUv; 
     varying float vTime; 
     #define PI 3.1415926538
 
     ${hsl2rgb}
+    ${hsb2rgb}
 
     void main() {
         float strength = ceil(vUv.x * 10.0) / 10.0 * ceil(vUv.y * 10.0) / 10.0;
         float hue  = 0.5 + strength * 0.5;
 
-        vec3 color = hsl2rgb(hue, 0.4, 0.5);
+        vec3 color = hsl2rgb(hue, 0.5, 0.5);
 
         gl_FragColor = vec4(color, 1.0);
     }
