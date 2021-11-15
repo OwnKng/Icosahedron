@@ -135,16 +135,23 @@ export const fragment = /* glsl */ `
     varying float vTime; 
     #define PI 3.1415926538
 
+    float random(vec2 st) {
+        return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+    }
+
     ${hsl2rgb}
     ${cnoise}
 
     void main() {
-        float strength = step(0.9, sin(cnoise(vec3(vUv.x * 10.0, vUv.y * 10.0, vTime * 0.05)) * 40.0));
+        vec2 gridUV = vec2(floor(vUv.x * 500.0) / 500.0, floor(vUv.y * 500.0) / 500.0);
+      
+        float strength = step(0.9, sin(cnoise(vec3(gridUV * 10.0, vTime * 0.05)) * 20.0));
 
-        vec3 colorOne = hsl2rgb(0.6, 0.5, 0.5);
-        vec3 colorTwo = hsl2rgb(vUv.x, 0.5, 0.5);
+        vec3 colorOne = vec3(0.5, 0.5, 0.5);
+        vec3 colorTwo = hsl2rgb(strength, 0.5, 0.5);
 
         vec3 color = mix(colorOne, colorTwo, strength);
+
         gl_FragColor = vec4(color, 1.0);
     }
 `
