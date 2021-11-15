@@ -21,6 +21,9 @@ import {
   createGeometry,
   addMaterial,
   setRotation,
+  createRaycaster,
+  setRaycasterFromCamera,
+  getRaycasterIntersection,
 } from "./functions"
 import { vertex } from "./shaders/vertex"
 import { fragment } from "./shaders/fragment"
@@ -61,6 +64,7 @@ const material = createMaterial("shader", {
   uniforms: {
     uSize: { value: 1.0 * renderer.getPixelRatio() },
     uTime: { value: 0 },
+    uMouse: { value: new THREE.Vector2(0.0, 1.0) },
   },
 })
 
@@ -70,7 +74,7 @@ const geometry = pipe(
   createGeometry,
   addShaderMaterial,
   addObjToScene
-)({ geometry: "plane", props: [10, 10, 100, 100] })
+)({ geometry: "plane", props: [20, 10, 1, 1] })
 
 //* create camera
 const setPositionOffCenter = curry(setPosition)({ x: 0, y: 0, z: 2 })
@@ -86,6 +90,18 @@ const camera = pipe(
 
 //* create controls
 const controls = createOrbitControls(canvas, camera)
+
+//_ raycaster
+const raycaster = createRaycaster()
+
+const mouse = new THREE.Vector2()
+
+function onMouseMove(event) {
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
+}
+
+window.addEventListener("mousemove", onMouseMove, false)
 
 //_ Resize events
 window.addEventListener("resize", () => {
@@ -107,10 +123,18 @@ const clock = createClock()
 
 const frame = () => {
   updateControls(controls)
-  render(scene, camera, renderer)
+
+  setRaycasterFromCamera(mouse, camera, raycaster)
+
+  const intersects = getRaycasterIntersection(scene.children, raycaster)
+  const uv = intersects.length ? intersects[0].uv : new THREE.Vector2(0.0, 1.0)
+
+  mutateUniform(material, "uMouse", uv)
 
   const elapsedTime = getClockTime(clock)
   mutateUniform(material, "uTime", elapsedTime)
+
+  render(scene, camera, renderer)
 
   window.requestAnimationFrame(frame)
 }

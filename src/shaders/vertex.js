@@ -86,15 +86,21 @@ float cnoise(vec3 P)
 
 export const vertex = /* glsl */ `
     uniform float uTime;
+    uniform vec2 uMouse; 
+
+    //_ varyings
     varying vec2 vUv; 
     varying float vTime; 
+    varying vec2 vMouse; 
 
 
     ${cnoise}
 
     void main() {
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+
         vTime = uTime; 
         vUv = uv;
+        vMouse = uMouse;
     }
 `

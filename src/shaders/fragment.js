@@ -133,25 +133,26 @@ const hsl2rgb = `
 export const fragment = /* glsl */ `
     varying vec2 vUv; 
     varying float vTime; 
-    #define PI 3.1415926538
-
-    float random(vec2 st) {
-        return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
-    }
+    varying vec2 vMouse;
 
     ${hsl2rgb}
     ${cnoise}
 
     void main() {
-        vec2 gridUV = vec2(floor(vUv.x * 500.0) / 500.0, floor(vUv.y * 500.0) / 500.0);
-      
-        float strength = step(0.9, sin(cnoise(vec3(gridUV * 10.0, vTime * 0.05)) * 20.0));
+        vec2 position = vec2(0.0, 1.0);
+        float distanceToPosition = distance(vUv, position);
+        float distanceToMouse = distance(vUv, vMouse);    
 
-        vec3 colorOne = vec3(0.5, 0.5, 0.5);
-        vec3 colorTwo = hsl2rgb(strength, 0.5, 0.5);
+        float circles = smoothstep(0.15, 0.2, cnoise(vec3(distanceToPosition * 80.0, 1.0, vTime * 0.2)));
+        float complementaryCircles = 1.0 - smoothstep(0.25, 0.3, cnoise(vec3(distanceToPosition * 100.0, 1.0, vTime * 0.1)));
+        float rightToLeft = 1.0 - smoothstep(0.55, 0.6, cnoise(vec3((vUv.y + vUv.x) * 60.0, 1.0, 0.5)));
+
+        float strength = (circles + complementaryCircles) * rightToLeft;
+
+        vec3 colorOne = vec3(0.08, 0.18, 0.28);
+        vec3 colorTwo = hsl2rgb(1.0 - distanceToPosition * 0.25, 0.6, 0.6);
 
         vec3 color = mix(colorOne, colorTwo, strength);
-
-        gl_FragColor = vec4(color, 1.0);
+        gl_FragColor = vec4(color, strength);
     }
 `
