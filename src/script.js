@@ -57,6 +57,7 @@ const renderer = pipe(
 const material = createMaterial("shader", {
   vertexShader: vertex,
   fragmentShader: fragment,
+  transparent: true,
   uniforms: {
     uSize: { value: 1.0 * renderer.getPixelRatio() },
     uTime: { value: 0 },
@@ -69,7 +70,7 @@ const geometry = pipe(
   createGeometry,
   addShaderMaterial,
   addObjToScene
-)({ geometry: "plane", props: [10, 10, 10, 10] })
+)({ geometry: "plane", props: [10, 10, 100, 100] })
 
 //* create camera
 const setPositionOffCenter = curry(setPosition)({ x: 0, y: 0, z: 2 })
